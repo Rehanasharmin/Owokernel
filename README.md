@@ -16,10 +16,10 @@ A bootable educational x86_64 kernel built from scratch.
 | 8 | Multitasking II | ✅ | Process Isolation, Separate Address Spaces (PML4). |
 | 9 | System Calls | ✅ | `syscall` interface for User-to-Kernel communication. |
 | 10 | VFS & RAMFS | ✅ | Virtual File System and in-memory RAMFS. |
-| 11 | Drivers | ⏳ | Planned: Keyboard, Timer, Disk drivers. |
+| 11 | Drivers | ✅ | Device Driver Framework and IDE Disk Driver. |
 | 12 | ELF Loader | ⏳ | Planned: Loading executable binaries. |
 | 13 | Networking | ⏳ | Planned: Modular network stack. |
 | 14 | Finalization | ⏳ | Planned: User Shell and Documentation. |
 
-## Current State: Phase 10
-The kernel now supports a **Virtual File System (VFS)** and a **RAMFS**. User processes can now open, write, and read files stored in memory using system calls. This provides the foundation for real disk-based filesystems.
+## Current State: Phase 11
+The kernel now has a formal **Driver Framework**. We have moved our hardware logic into dedicated driver modules for the Keyboard, Timer, and Disk. This allows the kernel to be extensible and modular.

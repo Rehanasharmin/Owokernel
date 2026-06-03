@@ -3,9 +3,9 @@
 #include "io.h"
 #include "kernel.h"
 #include "scheduler.h"
+#include "drivers/keyboard.h"
 
 void timer_handler() {
-    // Preempt current thread!
     scheduler_switch();
     pic_send_eoi(0);
 }
@@ -13,11 +13,11 @@ void timer_handler() {
 void keyboard_handler() {
     uint8_t scancode = inb(0x60);
     
-    if (scancode == 0x1E) kprint("A");
-    else if (scancode == 0x30) kprint("B");
-    else if (scancode == 0x2E) kprint("C");
-    else if (scancode == 0x12) kprint("W");
-    else if (scancode == 0x24) kprint("X");
+    if (scancode == 0x1E) keyboard_put_char('A');
+    else if (scancode == 0x30) keyboard_put_char('B');
+    else if (scancode == 0x2E) keyboard_put_char('C');
+    else if (scancode == 0x12) keyboard_put_char('W');
+    else if (scancode == 0x24) keyboard_put_char('X');
     else if (scancode == 0x1C) kprintln(" [Enter]");
     else kprint(".");
 
