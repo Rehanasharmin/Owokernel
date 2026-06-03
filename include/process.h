@@ -10,7 +10,7 @@ typedef struct Process {
     uint32_t pid;            // Process ID
 } Process;
 
-Process* process_create(void (*entry)());
+Process* process_create_elf(uint8_t* elf_data);
 void process_switch(Process* next);
 
 #endif

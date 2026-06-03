@@ -11,13 +11,17 @@
 #define SYS_READ     4
 #define SYS_WRITE    5
 #define SYS_CLOSE    6
+#define SYS_NET_SEND 7
+#define SYS_NET_RECV 8
 
-/* User-side wrappers */
+/* User-side wrappers (defined in syscall_wrappers.S) */
 void sys_print(const char* msg);
 void sys_exit();
 int sys_open(const char* path);
 size_t sys_write(int fd, const char* buf, size_t size);
 size_t sys_read(int fd, char* buf, size_t size);
 void sys_close(int fd);
+int sys_net_send(const char* dev, const uint8_t* data, size_t len);
+int sys_net_recv(const char* dev, uint8_t* buf, size_t len);
 
 #endif

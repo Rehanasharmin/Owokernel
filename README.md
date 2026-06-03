@@ -18,8 +18,8 @@ A bootable educational x86_64 kernel built from scratch.
 | 10 | VFS & RAMFS | ✅ | Virtual File System and in-memory RAMFS. |
 | 11 | Drivers | ✅ | Device Driver Framework and IDE Disk Driver. |
 | 12 | ELF Loader | ✅ | ELF parsing and dynamic binary loading. |
-| 13 | Networking | ⏳ | Planned: Modular network stack. |
+| 13 | Networking | ✅ | Modular Networking Stack and Loopback Interface. |
 | 14 | Finalization | ⏳ | Planned: User Shell and Documentation. |
 
-## Current State: Phase 12
-The kernel now features an **ELF Loader**. It can parse standard x86_64 ELF binaries, map their loadable segments into a private virtual address space, and execute the program's entry point. This allows the kernel to run external programs rather than just internal functions.
+## Current State: Phase 13
+The kernel now supports a **Modular Networking Stack**. It includes a device-independent interface and a **Loopback Interface (`lo`)** that allows processes to send and receive packets to themselves. We've also added networking system calls to allow user-land applications to perform raw packet I/O.

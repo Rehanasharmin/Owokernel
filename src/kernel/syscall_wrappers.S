@@ -43,3 +43,21 @@ sys_close:
     movq %rdi, %rdi
     syscall
     ret
+
+.global sys_net_send
+sys_net_send:
+    movq $7, %rax
+    movq %rdi, %rdi
+    movq %rsi, %rsi
+    movq %rdx, %rdx
+    syscall
+    ret
+
+.global sys_net_recv
+sys_net_recv:
+    movq $8, %rax
+    movq %rdi, %rdi
+    movq %rsi, %rsi
+    movq %rdx, %rdx
+    syscall
+    ret
