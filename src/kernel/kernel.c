@@ -9,17 +9,21 @@
 #include "thread.h"
 #include "scheduler.h"
 #include "process.h"
+#include "syscall.h"
 
-void user_task() {
-    kprintln("I am running in a private address space!");
-    
-    /* Test Isolation: try to write to a kernel address */
-    kprintln("Attempting to access kernel memory (should trigger panic)...");
-    uint64_t* kernel_ptr = (uint64_t*)0x1000; // Kernel area
-    *kernel_ptr = 0xDEADBEEF; 
-    
-    kprintln("Error: I accessed kernel memory!");
-    while(1);
+// External setup function from syscall_entry.c
+extern void setup_syscalls();
+
+void user_app() {
+    /* 
+     * This function is running in User Mode (simulated via Ring 3).
+     * It cannot use kprintln() because that's a kernel function.
+     * It must use the syscall wrapper.
+     */
+    sys_print("Hello from User Land!\n");
+    sys_print("I am using system calls to talk to the kernel.\n");
+    sys_print("Now, I will exit gracefully.\n");
+    sys_exit();
 }
 
 void kernel_main(void) {
@@ -33,16 +37,17 @@ void kernel_main(void) {
     }
     heap_init();
     
-    scheduler_init();
+    setup_syscalls();
     
-    kprintln("Creating isolated process...");
-    process_create(user_task);
+    scheduler_init();
+    kprintln("Creating user process...");
+    process_create(user_app);
     
     pic_init();
     idt_set_gate(32, (uint64_t)isr32, 0x8E);
     idt_set_gate(33, (uint64_t)isr33, 0x8E);
     
-    kprintln("Starting isolated scheduler...");
+    kprintln("Starting scheduler...");
     __asm__ volatile("sti");
 
     scheduler_switch();
