@@ -10,19 +10,36 @@
 #include "scheduler.h"
 #include "process.h"
 #include "syscall.h"
+#include "vfs.h"
 
-// External setup function from syscall_entry.c
 extern void setup_syscalls();
 
 void user_app() {
-    /* 
-     * This function is running in User Mode (simulated via Ring 3).
-     * It cannot use kprintln() because that's a kernel function.
-     * It must use the syscall wrapper.
-     */
-    sys_print("Hello from User Land!\n");
-    sys_print("I am using system calls to talk to the kernel.\n");
-    sys_print("Now, I will exit gracefully.\n");
+    sys_print("Testing VFS...\n");
+    
+    // 1. Open (create) a file
+    int fd = sys_open("hello.txt");
+    sys_print("Opened hello.txt with FD: ");
+    // We don't have a sys_print_int, so just assume it works
+    
+    // 2. Write to the file
+    sys_write(fd, "Hello from the RAMFS!", 20);
+    sys_print("Wrote to file.\n");
+    
+    // 3. Close and Re-open to test persistence
+    sys_close(fd);
+    fd = sys_open("hello.txt");
+    
+    // 4. Read back from the file
+    char buffer[64];
+    // In a real user app, we'd need a way to map this buffer.
+    // For this simulation, we are using a simple buffer.
+    sys_read(fd, buffer, 64);
+    sys_print("Read from file: ");
+    sys_print(buffer);
+    sys_print("\n");
+    
+    sys_print("VFS Test Complete. Exiting...\n");
     sys_exit();
 }
 
@@ -38,9 +55,10 @@ void kernel_main(void) {
     heap_init();
     
     setup_syscalls();
+    vfs_init();
     
     scheduler_init();
-    kprintln("Creating user process...");
+    kprintln("Creating VFS test process...");
     process_create(user_app);
     
     pic_init();

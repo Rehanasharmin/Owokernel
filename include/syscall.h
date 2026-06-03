@@ -2,28 +2,22 @@
 #define SYSCALL_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 /* Syscall Numbers */
 #define SYS_PRINT    1
 #define SYS_EXIT     2
-#define SYS_KMALLOC  3
+#define SYS_OPEN     3
+#define SYS_READ     4
+#define SYS_WRITE    5
+#define SYS_CLOSE    6
 
-/* User-side wrappers (these would normally be in a user library) */
-static inline void sys_print(const char* msg) {
-    __asm__ volatile (
-        "movq %1, %%rdi\n"
-        "movq %0, %%rax\n"
-        "syscall\n"
-        : : "i"(SYS_PRINT), "r"(msg) : "rax", "rdi"
-    );
-}
-
-static inline void sys_exit() {
-    __asm__ volatile (
-        "movq %0, %%rax\n"
-        "syscall\n"
-        : : "i"(SYS_EXIT) : "rax"
-    );
-}
+/* User-side wrappers */
+void sys_print(const char* msg);
+void sys_exit();
+int sys_open(const char* path);
+size_t sys_write(int fd, const char* buf, size_t size);
+size_t sys_read(int fd, char* buf, size_t size);
+void sys_close(int fd);
 
 #endif

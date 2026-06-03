@@ -2,6 +2,7 @@
 #include "kernel.h"
 
 extern void syscall_entry();
+extern uint64_t syscall_handler(uint64_t syscall_num, uint64_t arg1, uint64_t arg2, uint64_t arg3);
 
 /* 
  * This is the entry point the CPU jumps to when 'syscall' is executed.
@@ -18,13 +19,10 @@ __asm__(
     "    # Set up arguments for the C handler\n"
     "    # rax is already the syscall number\n"
     "    # rdi is the first argument\n"
-    "    movq %rax, %rdi\n" 
-    "    movq %rsi, %rsi\n" // second arg
-    "    # We need to swap them to fit (syscall_num, arg1)\n"
-    "    pushq %rsi\n"
-    "    pushq %rax\n"
+    "    # rsi is the second argument\n"
+    "    # rdx is the third argument\n"
+    "    \n"
     "    call syscall_handler_wrapper\n"
-    "    addq $16, %rsp\n"
     "    \n"
     "    # Restore registers\n"
     "    popq %r15; popq %r14; popq %r13; popq %r12; popq %rbp; popq %rbx\n"
@@ -36,19 +34,21 @@ __asm__(
 );
 
 void syscall_handler_wrapper() {
-    uint64_t num = 0;
-    uint64_t arg = 0;
-    __asm__ volatile("popq %0" : "=r"(num));
-    __asm__ volatile("popq %0" : "=r"(arg));
+    uint64_t num, a1, a2, a3;
     
-    extern void syscall_handler(uint64_t syscall_num, uint64_t arg1);
-    syscall_handler(num, arg);
+    __asm__ volatile("movq %%rax, %0" : "=r"(num));
+    __asm__ volatile("movq %%rdi, %0" : "=r"(a1));
+    __asm__ volatile("movq %%rsi, %0" : "=r"(a2));
+    __asm__ volatile("movq %%rdx, %0" : "=r"(a3));
+    
+    uint64_t result = syscall_handler(num, a1, a2, a3);
+    
+    __asm__ volatile("movq %0, %%rax" : : "r"(result));
 }
 
 void setup_syscalls() {
     uint64_t lstar = (uint64_t)syscall_entry;
     
-    /* Write the address of syscall_entry to the LSTAR MSR (0xC0000082) */
     __asm__ volatile (
         "movq %0, %%rax\n"
         "movq %1, %%rdx\n"

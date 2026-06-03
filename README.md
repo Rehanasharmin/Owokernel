@@ -15,11 +15,11 @@ A bootable educational x86_64 kernel built from scratch.
 | 7 | Multitasking I | ✅ | Preemptive Round-Robin Scheduling and Context Switching. |
 | 8 | Multitasking II | ✅ | Process Isolation, Separate Address Spaces (PML4). |
 | 9 | System Calls | ✅ | `syscall` interface for User-to-Kernel communication. |
-| 10 | VFS & RAMFS | ⏳ | Planned: Virtual File System and In-memory FS. |
+| 10 | VFS & RAMFS | ✅ | Virtual File System and in-memory RAMFS. |
 | 11 | Drivers | ⏳ | Planned: Keyboard, Timer, Disk drivers. |
 | 12 | ELF Loader | ⏳ | Planned: Loading executable binaries. |
 | 13 | Networking | ⏳ | Planned: Modular network stack. |
 | 14 | Finalization | ⏳ | Planned: User Shell and Documentation. |
 
-## Current State: Phase 9
-The kernel now supports **System Calls**. User processes can now safely request services from the kernel (like printing to the screen) via the `syscall` instruction, bridging the gap between Ring 3 and Ring 0.
+## Current State: Phase 10
+The kernel now supports a **Virtual File System (VFS)** and a **RAMFS**. User processes can now open, write, and read files stored in memory using system calls. This provides the foundation for real disk-based filesystems.
