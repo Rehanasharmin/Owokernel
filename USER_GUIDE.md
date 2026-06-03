@@ -1,6 +1,6 @@
-# Nova Kernel: User & Developer Guide
+# Owokernel: User & Developer Guide
 
-Welcome to Nova, a minimalist, educational x86_64 kernel.
+Welcome to Owokernel, a minimalist, educational x86_64 kernel.
 
 ## 1. Getting Started
 
@@ -11,8 +11,8 @@ Welcome to Nova, a minimalist, educational x86_64 kernel.
    `qemu-system-x86_64 -cdrom nova.iso`
 
 ### Using the Shell
-Once the kernel boots, you will enter the **Nova Shell**.
-- The prompt is `Nova# `.
+Once the kernel boots, you will enter the **Owo Shell**.
+- The prompt is `Owo# `.
 - Type a command and press **Enter**.
 
 ### Available Commands
@@ -64,4 +64,4 @@ The kernel uses a **Preemptive Round Robin Scheduler**. Every timer tick, the ke
 3. Register the driver in `kernel_main` using `driver_register()`.
 
 ### Porting to New Hardware
-To port Nova to a different architecture (e.g., ARM64), you would need to replace the `gdt.c`, `idt.c`, `vmm.c` (paging), and the assembly in `context.c` and `syscall_entry.c`.
+To port Owokernel to a different architecture (e.g., ARM64), you would need to replace the `gdt.c`, `idt.c`, `vmm.c` (paging), and the assembly in `context.c` and `syscall_entry.c`.

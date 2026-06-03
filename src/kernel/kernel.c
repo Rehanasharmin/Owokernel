@@ -32,14 +32,14 @@ void kernel_main(void) {
     net_init();
     
     scheduler_init();
-    kprintln("Booting Nova Shell...");
+    kprintln("Booting Owo Shell...");
     thread_create(shell_main);
     
     pic_init();
     idt_set_gate(32, (uint64_t)isr32, 0x8E);
     idt_set_gate(33, (uint64_t)isr33, 0x8E);
     
-    kprintln("Kernel Ready. Welcome to Nova OS.");
+    kprintln("Kernel Ready. Welcome to Owokernel.");
     __asm__ volatile("sti");
 
     scheduler_switch();

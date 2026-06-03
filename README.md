@@ -19,7 +19,7 @@ A bootable educational x86_64 kernel built from scratch.
 | 11 | Drivers | ✅ | Device Driver Framework and IDE Disk Driver. |
 | 12 | ELF Loader | ✅ | ELF parsing and dynamic binary loading. |
 | 13 | Networking | ✅ | Modular Networking Stack and Loopback Interface. |
-| 14 | Finalization | ⏳ | Planned: User Shell and Documentation. |
+| 14 | Finalization | ✅ | User Shell and Documentation. |
 
-## Current State: Phase 13
-The kernel now supports a **Modular Networking Stack**. It includes a device-independent interface and a **Loopback Interface (`lo`)** that allows processes to send and receive packets to themselves. We've also added networking system calls to allow user-land applications to perform raw packet I/O.
+## Current State: Phase 14
+The kernel now features a fully functional **User Shell** and a complete **Technical Guide**. Owokernel is a complete, modular OS that supports multitasking, memory isolation, and a virtual filesystem.

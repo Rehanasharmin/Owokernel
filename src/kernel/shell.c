@@ -6,7 +6,7 @@ void shell_main() {
     int pos = 0;
 
     while (1) {
-        sys_print("Nova# ");
+        sys_print("Owo# ");
         pos = 0;
 
         // Read input from keyboard
@@ -51,7 +51,7 @@ void shell_main() {
             sys_net_send("lo", (const uint8_t*)"Shell Hello", 11);
             sys_print("Sent.\n");
         } else if (input[0] == 'e') {
-            sys_print("Shutting down Nova Kernel. Goodbye!\n");
+            sys_print("Shutting down Owokernel. Goodbye!\n");
             sys_exit();
         } else {
             sys_print("Unknown command.\n");
