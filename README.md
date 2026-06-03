@@ -17,9 +17,9 @@ A bootable educational x86_64 kernel built from scratch.
 | 9 | System Calls | ✅ | `syscall` interface for User-to-Kernel communication. |
 | 10 | VFS & RAMFS | ✅ | Virtual File System and in-memory RAMFS. |
 | 11 | Drivers | ✅ | Device Driver Framework and IDE Disk Driver. |
-| 12 | ELF Loader | ⏳ | Planned: Loading executable binaries. |
+| 12 | ELF Loader | ✅ | ELF parsing and dynamic binary loading. |
 | 13 | Networking | ⏳ | Planned: Modular network stack. |
 | 14 | Finalization | ⏳ | Planned: User Shell and Documentation. |
 
-## Current State: Phase 11
-The kernel now has a formal **Driver Framework**. We have moved our hardware logic into dedicated driver modules for the Keyboard, Timer, and Disk. This allows the kernel to be extensible and modular.
+## Current State: Phase 12
+The kernel now features an **ELF Loader**. It can parse standard x86_64 ELF binaries, map their loadable segments into a private virtual address space, and execute the program's entry point. This allows the kernel to run external programs rather than just internal functions.
