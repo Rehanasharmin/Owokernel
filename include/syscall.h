@@ -13,6 +13,7 @@
 #define SYS_CLOSE    6
 #define SYS_NET_SEND 7
 #define SYS_NET_RECV 8
+#define SYS_READ_KBD 9
 
 /* User-side wrappers (defined in syscall_wrappers.S) */
 void sys_print(const char* msg);
@@ -23,5 +24,6 @@ size_t sys_read(int fd, char* buf, size_t size);
 void sys_close(int fd);
 int sys_net_send(const char* dev, const uint8_t* data, size_t len);
 int sys_net_recv(const char* dev, uint8_t* buf, size_t len);
+char sys_read_kbd();
 
 #endif

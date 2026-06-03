@@ -5,6 +5,7 @@
 #include "thread.h"
 #include "vfs.h"
 #include "net/net_stack.h"
+#include "drivers/keyboard.h"
 
 void do_sys_print(const char* msg) {
     kprint("[User]: %s", msg);
@@ -38,6 +39,8 @@ uint64_t syscall_handler(uint64_t syscall_num, uint64_t arg1, uint64_t arg2, uin
             return (uint64_t)net_send_packet((const char*)arg1, (const uint8_t*)arg2, (size_t)arg3);
         case SYS_NET_RECV:
             return (uint64_t)net_recv_packet((const char*)arg1, (uint8_t*)arg2, (size_t)arg3);
+        case SYS_READ_KBD:
+            return (uint64_t)keyboard_get_char();
         default:
             kprintln("Unknown syscall: %d", syscall_num);
             return -1;

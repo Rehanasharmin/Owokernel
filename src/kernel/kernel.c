@@ -14,31 +14,7 @@
 #include "net/net_stack.h"
 
 extern void setup_syscalls();
-
-void net_test_app() {
-    sys_print("Starting Networking Test...\n");
-    
-    const char* msg = "Hello Network!";
-    uint8_t buffer[64];
-    
-    sys_print("Sending packet to 'lo'...\n");
-    sys_net_send("lo", (const uint8_t*)msg, 14);
-    
-    sys_print("Receiving packet from 'lo'...\n");
-    int len = sys_net_recv("lo", buffer, 64);
-    
-    if (len > 0) {
-        buffer[len] = '\0';
-        sys_print("Received: ");
-        sys_print((const char*)buffer);
-        sys_print("\n");
-    } else {
-        sys_print("Failed to receive packet.\n");
-    }
-    
-    sys_print("Networking Test Complete. Exiting...\n");
-    sys_exit();
-}
+extern void shell_main();
 
 void kernel_main(void) {
     gdt_install();
@@ -56,17 +32,14 @@ void kernel_main(void) {
     net_init();
     
     scheduler_init();
-    kprintln("Creating Net test process...");
-    process_create_elf(NULL); // This is a placeholder, I'll use a normal thread for the test
-    
-    // Let's just create a kernel thread for the net test to avoid ELF complexity here
-    thread_create(net_test_app);
+    kprintln("Booting Nova Shell...");
+    thread_create(shell_main);
     
     pic_init();
     idt_set_gate(32, (uint64_t)isr32, 0x8E);
     idt_set_gate(33, (uint64_t)isr33, 0x8E);
     
-    kprintln("Starting scheduler...");
+    kprintln("Kernel Ready. Welcome to Nova OS.");
     __asm__ volatile("sti");
 
     scheduler_switch();

@@ -61,3 +61,9 @@ sys_net_recv:
     movq %rdx, %rdx
     syscall
     ret
+
+.global sys_read_kbd
+sys_read_kbd:
+    movq $9, %rax
+    syscall
+    ret
