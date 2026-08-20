@@ -28,3 +28,16 @@ All planned phases are implemented. Build with `make`; see `USER_GUIDE.md` for a
 ```
 make
 ```
+
+## Run it in a VM
+
+```sh
+make                 # build build/kernel.bin
+make iso             # build/build/owokernel.iso (BIOS + UEFI)
+make run             # boot with QEMU
+```
+
+VM-specific settings, including VirtualBox, Limbo PC Emulator, VMware and
+QEMU, are documented in [VM-SETTINGS.md](VM-SETTINGS.md). Owokernel is an
+x86_64 VGA-text kernel; use at least 128 MiB RAM and BIOS/Legacy firmware for
+the broadest compatibility.

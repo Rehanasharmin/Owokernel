@@ -14,12 +14,20 @@ make
 The linked kernel is written to `build/kernel.bin`.
 
 ### Booting
-1. Create an ISO with the Limine bootloader (see `limine.cfg`).
+1. Build the kernel and a BIOS + UEFI bootable ISO:
+
+```sh
+make
+make iso
+```
+
 2. Run in QEMU:
 
+```sh
+qemu-system-x86_64 -cdrom build/owokernel.iso -m 128M -serial stdio
 ```
-qemu-system-x86_64 -cdrom owokernel.iso
-```
+
+See [VM-SETTINGS.md](VM-SETTINGS.md) for VirtualBox, Limbo PC Emulator, VMware, and QEMU settings.
 
 ### Using the Shell
 After boot you get the **Owo Shell** prompt `Owo# `.
