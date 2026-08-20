@@ -5,32 +5,30 @@
 #include "scheduler.h"
 #include "drivers/keyboard.h"
 
-void timer_handler() {
-    scheduler_switch();
+static uint64_t ticks = 0;
+
+void timer_handler(void) {
+    ticks++;
     pic_send_eoi(0);
+    if ((ticks % 8) == 0) {
+        scheduler_switch();
+    }
 }
 
-void keyboard_handler() {
+void keyboard_handler(void) {
     uint8_t scancode = inb(0x60);
-    
-    if (scancode == 0x1E) keyboard_put_char('A');
-    else if (scancode == 0x30) keyboard_put_char('B');
-    else if (scancode == 0x2E) keyboard_put_char('C');
-    else if (scancode == 0x12) keyboard_put_char('W');
-    else if (scancode == 0x24) keyboard_put_char('X');
-    else if (scancode == 0x1C) kprintln(" [Enter]");
-    else kprint(".");
-
+    keyboard_handle_scancode(scancode);
     pic_send_eoi(1);
 }
 
 void irq_handler(uint64_t vector, uint64_t error_code) {
+    (void)error_code;
     if (vector == 32) {
         timer_handler();
     } else if (vector == 33) {
         keyboard_handler();
     } else {
-        kprintln("Unhandled IRQ: %d", vector);
-        pic_send_eoi(vector - 32);
+        kprintln("Unhandled IRQ: %d", (int)vector);
+        pic_send_eoi((uint8_t)(vector - 32));
     }
 }

@@ -2,24 +2,21 @@
 #include "net/net_packet.h"
 #include "heap.h"
 #include "kernel.h"
+#include "string.h"
 
-/* A simple queue for the loopback interface */
 static NetPacket* rx_queue_head = NULL;
 static NetPacket* rx_queue_tail = NULL;
 
-static int lo_init() {
+static int lo_init(void) {
     kprintln("Net: Loopback interface (lo) initialized.");
     return 0;
 }
 
 static int lo_send(NetPacket* packet) {
-    /* 
-     * Loopback "send" is just adding the packet to the "receive" queue.
-     */
     NetPacket* copy = (NetPacket*)kmalloc(sizeof(NetPacket));
     if (!copy) return -1;
 
-    for (size_t i = 0; i < packet->length; i++) copy->data[i] = packet->data[i];
+    kmemcpy(copy->data, packet->data, packet->length);
     copy->length = packet->length;
     copy->next = NULL;
 
@@ -30,17 +27,14 @@ static int lo_send(NetPacket* packet) {
         rx_queue_tail->next = copy;
         rx_queue_tail = copy;
     }
-
     return 0;
 }
 
 static int lo_receive(NetPacket** packet) {
     if (!rx_queue_head) return -1;
-
     *packet = rx_queue_head;
     rx_queue_head = rx_queue_head->next;
     if (!rx_queue_head) rx_queue_tail = NULL;
-
     return 0;
 }
 

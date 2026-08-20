@@ -1,6 +1,5 @@
 #include "syscall.h"
 #include "kernel.h"
-#include "heap.h"
 #include "scheduler.h"
 #include "thread.h"
 #include "vfs.h"
@@ -8,12 +7,15 @@
 #include "drivers/keyboard.h"
 
 void do_sys_print(const char* msg) {
-    kprint("[User]: %s", msg);
+    if (msg) kprint("%s", msg);
 }
 
-void do_sys_exit() {
+void do_sys_exit(void) {
+    Thread* t = scheduler_get_current();
+    if (t) t->state = THREAD_FINISHED;
     kprintln("Process requested exit.");
-    while(1) {
+    scheduler_switch();
+    while (1) {
         __asm__ volatile("hlt");
     }
 }
@@ -40,9 +42,9 @@ uint64_t syscall_handler(uint64_t syscall_num, uint64_t arg1, uint64_t arg2, uin
         case SYS_NET_RECV:
             return (uint64_t)net_recv_packet((const char*)arg1, (uint8_t*)arg2, (size_t)arg3);
         case SYS_READ_KBD:
-            return (uint64_t)keyboard_get_char();
+            return (uint64_t)(uint8_t)keyboard_get_char();
         default:
-            kprintln("Unknown syscall: %d", syscall_num);
-            return -1;
+            kprintln("Unknown syscall: %d", (int)syscall_num);
+            return (uint64_t)-1;
     }
 }

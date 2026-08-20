@@ -1,7 +1,7 @@
 #ifndef NET_DEVICE_H
 #define NET_DEVICE_H
 
-#include "net_packet.h"
+#include "net/net_packet.h"
 #include <stdint.h>
 
 typedef struct NetDevice {

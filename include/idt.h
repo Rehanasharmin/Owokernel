@@ -6,11 +6,11 @@
 struct idt_entry {
     uint16_t isr_low;
     uint16_t kernel_cs;
-    uint8_t reserved;
-    uint8_t ist;
+    uint8_t  ist;
+    uint8_t  attributes;
     uint16_t isr_mid;
-    uint16_t attributes;
-    uint16_t isr_high;
+    uint32_t isr_high;
+    uint32_t reserved;
 } __attribute__((packed));
 
 struct idt_ptr {
@@ -18,11 +18,11 @@ struct idt_ptr {
     uint64_t base;
 } __attribute__((packed));
 
-extern void isr0();
-extern void isr32();
-extern void isr33();
+extern void isr0(void);
+extern void isr32(void);
+extern void isr33(void);
 
-void idt_install();
+void idt_install(void);
 void idt_set_gate(uint8_t num, uint64_t isr, uint8_t flags);
 
 #endif

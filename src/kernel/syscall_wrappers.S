@@ -1,3 +1,4 @@
+.section .note.GNU-stack,"",@progbits
 .section .text
 .global sys_print
 sys_print:
