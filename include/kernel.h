@@ -4,7 +4,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
-/* Basic logging */
+void terminal_init(void);
+void terminal_clear(void);
+void terminal_putchar(char c);
+void kputc(char c);
 void kprint(const char* fmt, ...);
 void kprintln(const char* fmt, ...);
 

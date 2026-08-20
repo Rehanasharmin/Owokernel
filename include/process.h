@@ -5,12 +5,11 @@
 #include "vmm.h"
 
 typedef struct Process {
-    Thread thread;           // The main thread of the process
-    uint64_t* pml4;          // Private address space
-    uint32_t pid;            // Process ID
+    Thread thread;
+    uint64_t* pml4;
+    uint32_t pid;
 } Process;
 
 Process* process_create_elf(uint8_t* elf_data);
-void process_switch(Process* next);
 
 #endif

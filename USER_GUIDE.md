@@ -1,67 +1,94 @@
 # Owokernel: User & Developer Guide
 
-Welcome to Owokernel, a minimalist, educational x86_64 kernel.
+Welcome to Owokernel, a minimalist, educational x86_64 kernel covering boot through a user shell.
 
 ## 1. Getting Started
 
-### Booting the Kernel
-1. Build the project using `make`.
-2. Create an ISO using the Limine bootloader (see Phase 1 for instructions).
-3. Run the ISO in QEMU:
-   `qemu-system-x86_64 -cdrom nova.iso`
+### Building
+Requires `gcc` and `ld` targeting x86_64 ELF.
+
+```
+make
+```
+
+The linked kernel is written to `build/kernel.bin`.
+
+### Booting
+1. Create an ISO with the Limine bootloader (see `limine.cfg`).
+2. Run in QEMU:
+
+```
+qemu-system-x86_64 -cdrom owokernel.iso
+```
 
 ### Using the Shell
-Once the kernel boots, you will enter the **Owo Shell**.
-- The prompt is `Owo# `.
-- Type a command and press **Enter**.
+After boot you get the **Owo Shell** prompt `Owo# `.
 
-### Available Commands
-- `help`: Displays this list of commands.
-- `clear`: Clears the terminal screen.
-- `write <filename> <text>`: Creates a file in the RAMFS and writes text to it.
-- `read <filename>`: Reads the content of a file from RAMFS and prints it.
-- `send <text>`: Sends a raw network packet via the loopback interface.
-- `exit`: Shuts down the system.
+| Command | Description |
+| :--- | :--- |
+| `help` | List commands |
+| `clear` | Clear the VGA console |
+| `ls` | List RAMFS files |
+| `write <file> <text>` | Create/overwrite a file |
+| `read <file>` | Print a file |
+| `send <text>` | Send a packet on `lo` |
+| `recv` | Receive a packet from `lo` |
+| `mem` | Physical memory usage |
+| `ps` | List threads |
+| `echo <text>` | Print text |
+| `exit` | Halt the CPU |
 
 ---
 
 ## 2. Technical Architecture
 
-### Memory Layout
-- **Physical Memory:** Managed via a Bitmap Allocator (PMM).
-- **Virtual Memory:** 4-level paging. The kernel resides in the "Higher Half" (`0xFFFF800000000000`), and user processes reside in the "Lower Half".
-- **Kernel Heap:** A free-list allocator providing `kmalloc` and `kfree`.
+### Phases implemented
+1. **Bootstrapping** — Limine config, 64-bit freestanding kernel, VGA text.
+2. **Early init** — GDT (kernel + user segments), IDT, CPU exceptions.
+3. **Physical memory** — Bitmap page-frame allocator.
+4. **Virtual memory** — 4-level paging, identity map, per-process PML4.
+5. **Heap** — Free-list `kmalloc` / `kfree`.
+6. **Interrupts** — PIC remap, PIT timer, PS/2 keyboard.
+7. **Multitasking I** — Round-robin threads and context switch.
+8. **Multitasking II** — Process address spaces.
+9. **Syscalls** — `syscall` / `sysret` with STAR/LSTAR.
+10. **VFS & RAMFS** — File table over in-memory inodes.
+11. **Drivers** — Registration framework, keyboard, timer, IDE PIO.
+12. **ELF loader** — PT_LOAD mapping into a process PML4.
+13. **Networking** — Device table + loopback queue.
+14. **Shell** — Interactive command processor.
 
-### The System Call Interface
-User processes communicate with the kernel via the `syscall` instruction.
-| Syscall | Number | Description |
-| :--- | :--- | :--- |
-| `sys_print` | 1 | Prints a string to the VGA console. |
-| `sys_exit` | 2 | Terminates the current process. |
-| `sys_open` | 3 | Opens/Creates a file in RAMFS. |
-| `sys_read` | 4 | Reads data from an open file. |
-| `sys_write` | 5 | Writes data to an open file. |
-| `sys_close` | 6 | Closes a file handle. |
-| `sys_net_send` | 7 | Sends a packet through a network device. |
-| `sys_net_recv` | 8 | Receives a packet from a network device. |
-| `sys_read_kbd` | 9 | Reads a single character from the keyboard. |
+### Memory layout
+- Physical bitmap at `0x100000`.
+- Kernel linked at `0x1000000` (`linker.ld`).
+- Identity map of the first 32 MiB.
+- Kernel heap at `0xFFFF900000000000`.
+- User stacks near `0x7FFFFFFFE000`.
 
-### Multitasking
-The kernel uses a **Preemptive Round Robin Scheduler**. Every timer tick, the kernel saves the current thread's registers and swaps to the next available thread.
+### System calls
+
+| Name | Number |
+| :--- | :--- |
+| `sys_print` | 1 |
+| `sys_exit` | 2 |
+| `sys_open` | 3 |
+| `sys_read` | 4 |
+| `sys_write` | 5 |
+| `sys_close` | 6 |
+| `sys_net_send` | 7 |
+| `sys_net_recv` | 8 |
+| `sys_read_kbd` | 9 |
+
+User wrappers live in `src/kernel/syscall_wrappers.S`. The interactive shell runs as a **kernel thread** and talks to VFS/net/keyboard directly so it does not depend on `sysret` from CPL0.
 
 ---
 
 ## 3. Extending the Kernel
 
-### Adding a New Syscall
-1. Define a new number in `include/syscall.h`.
-2. Implement the handler in `src/kernel/syscall.c`.
+### New syscall
+1. Add a number in `include/syscall.h`.
+2. Handle it in `src/kernel/syscall.c`.
 3. Add a wrapper in `src/kernel/syscall_wrappers.S`.
 
-### Adding a Driver
-1. Create a new `Driver` struct in `src/kernel/drivers/`.
-2. Implement the `init`, `read`, and `write` functions.
-3. Register the driver in `kernel_main` using `driver_register()`.
-
-### Porting to New Hardware
-To port Owokernel to a different architecture (e.g., ARM64), you would need to replace the `gdt.c`, `idt.c`, `vmm.c` (paging), and the assembly in `context.c` and `syscall_entry.c`.
+### New driver
+Implement a `Driver` and call `driver_register()` from `kernel_main`.

@@ -21,16 +21,16 @@ typedef struct File {
     bool open;
 } File;
 
-/* VFS API */
-void vfs_init();
+void vfs_init(void);
 int vfs_open(const char* path);
 size_t vfs_read(int fd, char* buffer, size_t size);
 size_t vfs_write(int fd, const char* buffer, size_t size);
 void vfs_close(int fd);
+void vfs_list(void);
 
-/* RAMFS Internal API */
-void ramfs_init();
+void ramfs_init(void);
 Inode* ramfs_find_inode(const char* name);
 Inode* ramfs_create_inode(const char* name);
+void ramfs_list(void);
 
 #endif

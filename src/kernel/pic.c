@@ -6,25 +6,28 @@
 #define PIC2_COMMAND 0xA0
 #define PIC2_DATA    0xA1
 
-void pic_init() {
-    /* ICW1: Start initialization sequence */
+void pic_init(void) {
     outb(PIC1_COMMAND, 0x11);
+    io_wait();
     outb(PIC2_COMMAND, 0x11);
+    io_wait();
 
-    /* ICW2: Remap the offset (IRQ 0-7 -> IDT 32-39, IRQ 8-15 -> IDT 40-47) */
     outb(PIC1_DATA, 0x20);
+    io_wait();
     outb(PIC2_DATA, 0x28);
+    io_wait();
 
-    /* ICW3: Tell PICs how they are wired together */
     outb(PIC1_DATA, 0x04);
+    io_wait();
     outb(PIC2_DATA, 0x02);
+    io_wait();
 
-    /* ICW4: Set 8086 mode */
     outb(PIC1_DATA, 0x01);
+    io_wait();
     outb(PIC2_DATA, 0x01);
+    io_wait();
 
-    /* Mask all interrupts except Timer (0) and Keyboard (1) */
-    outb(PIC1_DATA, 0xFC); // 1111 1100
+    outb(PIC1_DATA, 0xFC);
     outb(PIC2_DATA, 0xFF);
 }
 
