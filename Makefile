@@ -10,6 +10,7 @@ ASFLAGS = -m64 -ffreestanding -c
 LDFLAGS = -m elf_x86_64 -T linker.ld -nostdlib
 
 TARGET = build/kernel.bin
+ISO = build/owokernel.iso
 
 OBJS = \
 	src/kernel/kernel.o \
@@ -42,6 +43,17 @@ OBJS = \
 
 all: $(TARGET)
 
+iso: $(ISO)
+
+$(ISO): $(TARGET) limine.cfg tools/build-iso.sh
+	tools/build-iso.sh
+
+run: $(ISO)
+	qemu-system-x86_64 -cdrom $(ISO) -m 128M -serial stdio
+
+run-kvm: $(ISO)
+	qemu-system-x86_64 -enable-kvm -cdrom $(ISO) -m 128M -serial stdio
+
 $(TARGET): $(OBJS)
 	mkdir -p build
 	$(LD) $(LDFLAGS) $(OBJS) -o $(TARGET)
@@ -56,4 +68,4 @@ clean:
 	rm -rf build
 	find src -name '*.o' -delete
 
-.PHONY: all clean
+.PHONY: all iso run run-kvm clean
